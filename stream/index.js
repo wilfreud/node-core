@@ -5,6 +5,8 @@ import {
   createWriteStream,
 } from "node:fs";
 
+const PAUSE_TIME = 2500;
+
 const FILE = "C:\\Users\\Autre\\Videos\\2024-11-11 09-38-21.mkv";
 
 const DEST = "C:\\Users\\Autre\\Videos\\copy.mkv";
@@ -28,17 +30,29 @@ rStream.on("open", (fd) => {
 });
 
 let read = 0;
-rStream
-  .on("data", (chunk) => {
-    read += chunk.length;
-    console.info(
-      "Reading",
-      ((read / stats.size) * 100).toFixed(2),
-      `% (${(chunk.byteLength / 1024).toFixed(2)} MB)`
-    );
-    //   console.log(chunk);
-  })
-  .pipe(wStream);
+let paused = false;
+
+// TODO: find how to pause piped stream
+rStream.on("data", (chunk) => {
+  read += chunk.length;
+  console.info(
+    "Reading",
+    ((read / stats.size) * 100).toFixed(2),
+    `% (${(chunk.byteLength / 1024).toFixed(2)} MB)`
+  );
+
+  if (read >= stats.size / 2 && !paused) {
+    console.warn("Pausing transfer for", PAUSE_TIME / 1000, "seconds...");
+    paused = true;
+    rStream.pause();
+
+    setTimeout(() => {
+      console.warn("Resuming transfer...");
+      rStream.resume();
+    }, PAUSE_TIME);
+  }
+});
+//   .pipe(wStream);
 
 rStream.on("error", (err) => {
   console.error("Error while reading stream", err);
