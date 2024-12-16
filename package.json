@@ -1,11 +1,14 @@
 {
   "name": "node-core",
   "version": "1.0.0",
-  "description": "",
+  "description": "Learning nodejs core concepts",
   "main": "index.js",
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "http": "node http/index.js",
+    "stream": "node stream/index.js"
+  },
   "keywords": [],
-  "author": "",
+  "author": "Commodore64 <commodore64.dev@gmail.com>",
   "license": "ISC"
 }
